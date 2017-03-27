@@ -1,5 +1,9 @@
 package com.ebaby.application;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,41 +24,62 @@ public class UserTest {
 
     @Test
     public void checkFirstName() {
-        Assert.assertEquals(firstName, testUser.getFirstName());
+        assertEquals(firstName, testUser.getFirstName());
     }
 
     @Test
-    public void checkLastNAme(){
-        Assert.assertEquals(lastName, testUser.getLastName());
+    public void checkLastNAme() {
+        assertEquals(lastName, testUser.getLastName());
     }
 
     @Test
-    public void checkUserEmail(){
-        Assert.assertEquals(userEmail, testUser.getUserEmail());
+    public void checkUserEmail() {
+        assertEquals(userEmail, testUser.getUserEmail());
     }
 
     @Test
-    public void checkUserName(){
-        Assert.assertEquals(userName, testUser.getUserName());
+    public void checkUserName() {
+        assertEquals(userName, testUser.getUserName());
     }
 
     @Test
-    public void checkPassword(){
-        Assert.assertEquals(password, testUser.getPassword());
+    public void checkPassword() {
+        assertEquals(password, testUser.getPassword());
     }
 
     @Test
-    public void tryRegistering(){
-        Assert.assertTrue("Register returned false", testUser.doRegister());
+    public void tryLoginSuccess() {
+        assertTrue("Login must be successful", testUser.login(testUser.getPassword()));
     }
 
     @Test
-    public void tryLoginSuccess(){
-        Assert.assertTrue("Login must be successful", testUser.login());
+    public void tryLoginFailureBadPassword() {
+        assertFalse("Login must not be successful", testUser.login("badPassword"));
     }
 
     @Test
-    public void tryLogoutSuccess(){
-        Assert.assertTrue("Logout must be successful",testUser.logout());
+    public void tryLoginFailureBadUser() {
+        assertFalse(testUser.login("bad password"));
+    }
+
+    @Test
+    public void tryLogoutSuccess() {
+        testUser.login(testUser.getPassword());
+        testUser.logout();
+        assertFalse("Logout must be successful", testUser.isAuthenticated());
+    }
+
+    @Test
+    public void isAuthenticated() {
+        assertFalse(testUser.isAuthenticated());
+        testUser.login(testUser.getPassword());
+        assertTrue(testUser.isAuthenticated());
+    }
+
+    @Test
+    public void testRole() {
+        assertEquals(User.Role.BIDDER, testUser.getRole());
+        testUser.setRole(User.Role.SELLER);
+        assertEquals(User.Role.SELLER, testUser.getRole());
     }
 }

@@ -1,7 +1,30 @@
 package com.ebaby.application;
 
+import java.util.Objects;
+
 public class User {
     private String firstName;
+    private String lastName;
+    private String userEmail;
+    private String userName;
+    private String password;
+    private boolean authenticated;
+    private Role role;
+
+    public enum Role {
+        SELLER,
+        BIDDER
+    }
+
+    public User(String firstName, String lastName, String userEmail, String userName, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userEmail = userEmail;
+        this.userName = userName;
+        this.password = password;
+        authenticated = false;
+        role = Role.BIDDER;
+    }
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
@@ -16,19 +39,6 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
-    }
-
-    private String lastName;
-    private String userEmail;
-    private String userName;
-    private String password;
-
-    public User(String firstName, String lastName, String userEmail, String userName, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.userEmail = userEmail;
-        this.userName = userName;
         this.password = password;
     }
 
@@ -56,15 +66,51 @@ public class User {
         return password;
     }
 
-    public boolean doRegister(){
+    public boolean login(String password) {
+        if (Objects.equals(this.password, password)) {
+            authenticated = true;
+            return true;
+        }
         return false;
     }
 
-    public boolean login(){
-        return false;
+    public void logout() {
+        setAuthenticated(false);
     }
 
-    public boolean logout(){
-        return false;
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
+    }
+
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return authenticated == user.authenticated && Objects.equals(firstName, user.firstName) && Objects.equals(
+                lastName,
+                user.lastName) && Objects.equals(userEmail, user.userEmail) && Objects.equals(userName,
+                user.userName) && Objects.equals(password, user.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, userEmail, userName, password, authenticated);
     }
 }
