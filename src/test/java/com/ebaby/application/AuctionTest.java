@@ -18,7 +18,9 @@ public class AuctionTest {
     public void setUp() {
         userSeller = new User("firsName", "lastName", "userEmail", "userName", "password");
         userSeller.setRole(User.Role.SELLER);
+        userSeller.setAuthenticated(true);
         userBidder = new User("firsName1", "lastName1", "userEmail1", "userName1", "password1");
+        userBidder.setAuthenticated(true);
         startTime = DateTime.now().plusDays(5);
         endTime = DateTime.now().plusDays(10);
         auction = new Auction(userSeller, itemDesc, price, startTime, endTime);
@@ -48,5 +50,21 @@ public class AuctionTest {
     public void checkAuctionWithStartTimeAfterEndTime() {
         DateTime invalidEndTime = DateTime.now().plusDays(2);
         new Auction(userSeller, itemDesc, price, startTime, invalidEndTime);
+    }
+
+    @Test
+    public void checkBidSuccess(){
+        DateTime validTime = DateTime.now().plusDays(7);
+        Double validPrice = 4.0;
+        auction.bid(userBidder, validPrice, validTime);
+        Assert.assertEquals(auction.getHighestBidder(), userBidder);
+        Assert.assertEquals(auction.getPrice(), validPrice);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void checkAuctionwithInvalidPrice(){
+        DateTime validTime = DateTime.now().plusDays(7);
+        Double invalidPrice = 2.0;
+        auction.bid(userBidder, invalidPrice, validTime);
     }
 }
