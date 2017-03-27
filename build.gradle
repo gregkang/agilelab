@@ -8,7 +8,8 @@ dependencies {
     compile(
         [group: 'org.slf4j', name: 'slf4j-api', version: '1.7.22'],
         [group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.11'],
-        [group: 'com.google.guava', name: 'guava', version: '19.0']
+        [group: 'com.google.guava', name: 'guava', version: '19.0'],
+        [group: 'joda-time', name: 'joda-time', version: '2.9.9']
     )
 
     testCompile(

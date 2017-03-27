@@ -1,23 +1,30 @@
 package com.ebaby.application;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 public class Auction {
     private User user;
     private String itemDesc;
     private Double price;
-    private Date startTime;
-    private Date endTime;
+    private DateTime startTime;
+    private DateTime endTime;
 
-
-    public Auction(User user, String itemDesc, Double price, Date startTime, Date endTime) {
-        if(user.getRole() != User.Role.SELLER){
+    public Auction(User user, String itemDesc, Double price, DateTime startTime, DateTime endTime) {
+        if (user.getRole() != User.Role.SELLER) {
             throw new IllegalArgumentException("User must be seller");
+        }
+
+        if (startTime.isBefore(DateTime.now())) {
+            throw new IllegalArgumentException("startTime must be after now");
+        }
+
+        if (startTime.isAfter(endTime)) {
+            throw new IllegalArgumentException("startTime must be before endTime");
         }
         this.user = user;
         this.itemDesc = itemDesc;
         this.price = price;
-        this.startTime= startTime;
+        this.startTime = startTime;
         this.endTime = endTime;
     }
 
@@ -45,22 +52,20 @@ public class Auction {
         this.price = price;
     }
 
-    public Date getStartTime() {
+    public DateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(DateTime startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public DateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(DateTime endTime) {
         this.endTime = endTime;
     }
-
-
 
 }
