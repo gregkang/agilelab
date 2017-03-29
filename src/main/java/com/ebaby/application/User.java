@@ -3,11 +3,11 @@ package com.ebaby.application;
 import java.util.Objects;
 
 public class User {
-    private String firstName;
-    private String lastName;
-    private String userEmail;
-    private String userName;
-    private String password;
+    private final String firstName;
+    private final String lastName;
+    private final String userEmail;
+    private final String userName;
+    private final String password;
     private boolean authenticated;
     private Role role;
 
@@ -26,28 +26,8 @@ public class User {
         role = Role.BIDDER;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getFirstName() {
         return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
     }
 
     public String getLastName() {
@@ -106,11 +86,11 @@ public class User {
         return authenticated == user.authenticated && Objects.equals(firstName, user.firstName) && Objects.equals(
                 lastName,
                 user.lastName) && Objects.equals(userEmail, user.userEmail) && Objects.equals(userName,
-                user.userName) && Objects.equals(password, user.password);
+                user.userName) && Objects.equals(password, user.password) && role == user.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, userEmail, userName, password, authenticated);
+        return Objects.hash(firstName, lastName, userEmail, userName, password, authenticated, role);
     }
 }

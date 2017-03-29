@@ -6,9 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,17 +51,17 @@ public class UsersTest {
 
     @Test
     public void tryLoginSuccess() {
-        Assert.assertTrue("Login must be successful", users.login(user1.getUserName(), user1.getPassword()));
+        Assert.assertTrue(users.login(user1.getUserName(), user1.getPassword()));
     }
 
     @Test
     public void tryLoginFailureBadPassword() {
-        assertFalse("Login must not be successful", users.login(user2.getUserName(), "badPassword"));
+        assertFalse(users.login(user2.getUserName(), "badPassword"));
     }
 
     @Test
     public void tryLoginSFailureBadUser() {
-        assertFalse("Login must be successful", users.login("somethinggoeshere", user2.getPassword()));
+        assertFalse(users.login("somethinggoeshere", user2.getPassword()));
     }
 
     @Test
@@ -75,17 +72,16 @@ public class UsersTest {
 
     @Test
     public void testFindByUserNameInvalidUser() {
-        User actualUser = users.findByUserName("unknown user");
-        assertNull(actualUser);
+        assertNull(users.findByUserName("unknown user"));
     }
 
     @Test
     public void tryLogoutSuccess() {
-        assertTrue("Logout must be successful", users.logout(user1.getUserName()));
+        assertTrue(users.logout(user1.getUserName()));
     }
 
     @Test
     public void tryLogoutInvalidUser() {
-        assertFalse("Logout must be false for unknown username", users.logout("invalid username"));
+        assertFalse(users.logout("invalid username"));
     }
 }

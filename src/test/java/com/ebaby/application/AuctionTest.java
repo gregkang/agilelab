@@ -1,7 +1,8 @@
 package com.ebaby.application;
 
+import static org.junit.Assert.assertEquals;
+
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,11 +29,11 @@ public class AuctionTest {
 
     @Test
     public void checkAuctionConstruction() {
-        Assert.assertEquals(auction.getUser(), userSeller);
-        Assert.assertEquals(auction.getItemDesc(), itemDesc);
-        Assert.assertEquals(auction.getPrice(), price);
-        Assert.assertEquals(auction.getStartTime(), startTime);
-        Assert.assertEquals(auction.getEndTime(), endTime);
+        assertEquals(userSeller, auction.getUser());
+        assertEquals(itemDesc, auction.getItemDesc());
+        assertEquals(price, auction.getPrice());
+        assertEquals(startTime, auction.getStartTime());
+        assertEquals(endTime, auction.getEndTime());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -53,16 +54,16 @@ public class AuctionTest {
     }
 
     @Test
-    public void checkBidSuccess(){
+    public void checkBidSuccess() {
         DateTime validTime = DateTime.now().plusDays(7);
         Double validPrice = 4.0;
         auction.bid(userBidder, validPrice, validTime);
-        Assert.assertEquals(auction.getHighestBidder(), userBidder);
-        Assert.assertEquals(auction.getPrice(), validPrice);
+        assertEquals(userBidder, auction.getHighestBidder());
+        assertEquals(validPrice, auction.getPrice());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void checkAuctionwithInvalidPrice(){
+    public void checkAuctionWithInvalidPrice() {
         DateTime validTime = DateTime.now().plusDays(7);
         Double invalidPrice = 2.0;
         auction.bid(userBidder, invalidPrice, validTime);
