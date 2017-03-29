@@ -14,6 +14,7 @@ public class AuctionTest {
     private Double price = 3.0;
     private DateTime startTime;
     private DateTime endTime;
+    private boolean auctionActive;
 
     @Before
     public void setUp() {
@@ -59,7 +60,7 @@ public class AuctionTest {
         Double validPrice = 4.0;
         auction.bid(userBidder, validPrice, validTime);
         assertEquals(userBidder, auction.getHighestBidder());
-        assertEquals(validPrice, auction.getPrice());
+        assertEquals(validPrice, auction.getCurrentHighBid());
     }
 
     @Test(expected = IllegalArgumentException.class)
