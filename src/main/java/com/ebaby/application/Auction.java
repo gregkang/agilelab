@@ -13,7 +13,6 @@ public class Auction{
     private Double price;
     private User highestBidder;
     private boolean isActive;
-    private PostOffice postOffice;
 
     private Double currentHighBid;
 
@@ -81,14 +80,8 @@ public class Auction{
 
     public void onClose(){
         setActive(false);
-        PostOffice postOffice = PostOffice.getInstance();
-        if(highestBidder == null){
-            postOffice.sendEMail(seller.getUserEmail(), String.format("Sorry, your auction for \"%s\" did not have any bidders", itemDesc));
-        }
-        else {
-            postOffice.sendEMail(seller.getUserEmail(), String.format(" Your \"%s\" auction sold to bidder \"%s\" for \"%s\"", itemDesc, highestBidder.getUserEmail(), currentHighBid));
-            postOffice.sendEMail(highestBidder.getUserEmail(), String.format("Congratulations! you won an auction for a \"%s\" from \"%s\" for \"%s\"", itemDesc, seller.getUserEmail(), currentHighBid));
-        }
+        AuctionNotifier auctionNotifier = AuctionNotifier.createInstance(this);
+        auctionNotifier.notifyCloseAuction();
     }
 
     public User getUser() {
