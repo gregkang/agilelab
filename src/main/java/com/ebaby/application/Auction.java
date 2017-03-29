@@ -13,10 +13,29 @@ public class Auction{
     private Double price;
     private User highestBidder;
     private boolean isActive;
-
     private Double currentHighBid;
+    private Double sellerAmount;
+    private Double buyerAmount;
 
-    public Auction(User seller, String itemDesc, Double price, DateTime startTime, DateTime endTime) {
+    public Categories getCategory() {
+        return category;
+    }
+
+    public void setCategory(Categories category) {
+        this.category = category;
+    }
+
+    private Categories category;
+
+    enum Categories{
+        Car("Car"),
+        Downloadable_Software("Downloadable Software");
+
+        Categories(String type) {
+        }
+    }
+
+    public Auction(User seller, String itemDesc, Double price, DateTime startTime, DateTime endTime, Categories category) {
         if (!seller.isAuthenticated()) {
             throw new IllegalArgumentException("Seller must be authenticated before creating auction");
         }
@@ -37,6 +56,7 @@ public class Auction{
         this.startTime = startTime;
         this.endTime = endTime;
         this.currentHighBid = price;
+        this.category = category;
     }
 
     public User getHighestBidder() {
@@ -60,6 +80,7 @@ public class Auction{
         highestBidder = bidder;
     }
 
+
     public boolean isActive(DateTime bidTime) {
         if(bidTime.isBefore(endTime) || bidTime.isAfter(startTime)){
             isActive = true;
@@ -80,6 +101,18 @@ public class Auction{
 
     public void onClose(){
         setActive(false);
+        sellerAmount = currentHighBid - (currentHighBid * 2) /100;
+        if(category == Categories.Car){
+            buyerAmount = currentHighBid +1000;
+        }
+        else if(category != Categories.Downloadable_Software){
+            buyerAmount = currentHighBid + 10;
+        }
+
+        if(category == Categories.Car && currentHighBid > 50000){
+            buyerAmount = currentHighBid + (currentHighBid * 4) /100;
+        }
+
         AuctionNotifier auctionNotifier = AuctionNotifier.createInstance(this);
         auctionNotifier.notifyCloseAuction();
     }
