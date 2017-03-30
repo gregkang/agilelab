@@ -1,9 +1,10 @@
 package com.ebaby.application;
 
 import java.util.Objects;
+
 import org.joda.time.DateTime;
 
-public class Auction{
+public class Auction {
     private final User seller;
     private final String itemDesc;
     private final DateTime startTime;
@@ -34,7 +35,7 @@ public class Auction{
 
     private Categories category;
 
-    public enum Categories{
+    public enum Categories {
         Car("Car"),
         Downloadable_Software("Downloadable Software");
 
@@ -42,7 +43,12 @@ public class Auction{
         }
     }
 
-    public Auction(User seller, String itemDesc, Double price, DateTime startTime, DateTime endTime, Categories category) {
+    public Auction(User seller,
+            String itemDesc,
+            Double price,
+            DateTime startTime,
+            DateTime endTime,
+            Categories category) {
         if (!seller.isAuthenticated()) {
             throw new IllegalArgumentException("Seller must be authenticated before creating auction");
         }
@@ -87,9 +93,8 @@ public class Auction{
         highestBidder = bidder;
     }
 
-
     public boolean isActive(DateTime bidTime) {
-        if(bidTime.isBefore(endTime) || bidTime.isAfter(startTime)){
+        if (bidTime.isBefore(endTime) || bidTime.isAfter(startTime)) {
             isActive = true;
         }
         return isActive;
@@ -97,29 +102,27 @@ public class Auction{
 
     public void setActive(boolean active) {
         DateTime now = DateTime.now();
-        if(now.isBefore(endTime) || now.isAfter(startTime)){
+        if (now.isBefore(endTime) || now.isAfter(startTime)) {
             isActive = false;
         }
     }
 
-    public void onStart(){
+    public void onStart() {
         setActive(true);
     }
 
-    public void onClose(){
+    public void onClose() {
         setActive(false);
         Double highbid = currentHighBid;
-        sellerAmount = currentHighBid - (currentHighBid * 2) /100;
-        if(category == Categories.Car){
-            buyerAmount = currentHighBid +1000;
-        }
-        else if(category != Categories.Downloadable_Software){
+        sellerAmount = currentHighBid - (currentHighBid * 2) / 100;
+        if (category == Categories.Car) {
+            buyerAmount = currentHighBid + 1000;
+        } else if (category != Categories.Downloadable_Software) {
             buyerAmount = currentHighBid + 10;
-        }
-        else {
+        } else {
             buyerAmount = currentHighBid;
         }
-        if(category == Categories.Car && highbid > 50000) {
+        if (category == Categories.Car && highbid > 50000) {
             buyerAmount = buyerAmount + (highbid * 4) / 100;
         }
         AuctionNotifier auctionNotifier = NotificationFactory.createInstance(this);
