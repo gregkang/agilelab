@@ -113,19 +113,11 @@ public class Auction {
 
     public void onClose() {
         setActive(false);
-        Double highbid = currentHighBid;
-        sellerAmount = currentHighBid - (currentHighBid * 2) / 100;
-        if (category == Categories.Car) {
-            buyerAmount = currentHighBid + 1000;
-        } else if (category != Categories.Downloadable_Software) {
-            buyerAmount = currentHighBid + 10;
-        } else {
-            buyerAmount = currentHighBid;
-        }
-        if (category == Categories.Car && highbid > 50000) {
-            buyerAmount = buyerAmount + (highbid * 4) / 100;
-        }
-        AuctionNotifier auctionNotifier = NotificationFactory.createInstance(this);
+        FeeCalculator sellerCalculator = FeeProcessingFactory.createInstance(this, User.Role.SELLER);
+        FeeCalculator buyerCalculator = FeeProcessingFactory.createInstance(this, User.Role.BIDDER);
+        sellerAmount = sellerCalculator.calculate(this);
+        buyerAmount = buyerCalculator.calculate(this);
+        AuctionNotifier auctionNotifier = AuctionNotifierFactory.createInstance(this);
         auctionNotifier.notifyCloseAuction();
     }
 
