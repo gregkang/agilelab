@@ -108,6 +108,7 @@ public class Auction{
 
     public void onClose(){
         setActive(false);
+        Double highbid = currentHighBid;
         sellerAmount = currentHighBid - (currentHighBid * 2) /100;
         if(category == Categories.Car){
             buyerAmount = currentHighBid +1000;
@@ -115,11 +116,12 @@ public class Auction{
         else if(category != Categories.Downloadable_Software){
             buyerAmount = currentHighBid + 10;
         }
-
-        if(category == Categories.Car && currentHighBid > 50000){
-            buyerAmount = currentHighBid + (currentHighBid * 4) /100;
+        else {
+            buyerAmount = currentHighBid;
         }
-
+        if(category == Categories.Car && highbid > 50000) {
+            buyerAmount = buyerAmount + (highbid * 4) / 100;
+        }
         AuctionNotifier auctionNotifier = NotificationFactory.createInstance(this);
         auctionNotifier.notifyCloseAuction();
     }

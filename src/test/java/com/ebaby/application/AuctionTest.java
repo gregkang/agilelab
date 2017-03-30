@@ -90,4 +90,41 @@ public class AuctionTest {
         auction.onClose();
         assertTrue(postOffice.doesLogContain(userSeller.getUserEmail(), String.format("Sorry, your auction for \"%s\" did not have any bidders", auction.getItemDesc())));
     }
+
+    @Test
+    public void checkFeesforDownloadbleSoftware(){
+        DateTime validTime = DateTime.now().plusDays(7);
+        Double validPrice = 4.0;
+        auction.setCategory(Auction.Categories.Downloadable_Software);
+        auction.setActive(true);
+        auction.bid(userBidder, validPrice, validTime);
+        auction.onClose();
+        assertEquals(validPrice, auction.getBuyerAmount());
+    }
+
+    @Test
+    public void checkFeesforCarUnder50K(){
+        DateTime validTime = DateTime.now().plusDays(7);
+        Double validPrice = 4.0;
+        auction.setCategory(Auction.Categories.Car);
+        auction.setActive(true);
+        auction.bid(userBidder, validPrice, validTime);
+        auction.onClose();
+        Double finalPrice = validPrice + 1000;
+        assertEquals(finalPrice , auction.getBuyerAmount());
+    }
+
+    @Test
+    public void checkFeesforCarAbove50K(){
+        DateTime validTime = DateTime.now().plusDays(7);
+        Double validPrice = 51000.0;
+        auction.setCategory(Auction.Categories.Car);
+        auction.setActive(true);
+        auction.bid(userBidder, validPrice, validTime);
+        auction.onClose();
+        Double luxuryTax =  (validPrice * 4)/100;
+        Double finalPrice = validPrice + luxuryTax + 1000 ;
+        assertEquals(finalPrice , auction.getBuyerAmount());
+    }
+
 }
