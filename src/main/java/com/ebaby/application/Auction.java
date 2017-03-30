@@ -120,7 +120,7 @@ public class Auction{
             buyerAmount = currentHighBid + (currentHighBid * 4) /100;
         }
 
-        AuctionNotifier auctionNotifier = NotificationFactory.createInstance(this);
+        AuctionNotifier auctionNotifier = AuctionNotifierFactory.createInstance(this);
         auctionNotifier.notifyCloseAuction();
     }
 
