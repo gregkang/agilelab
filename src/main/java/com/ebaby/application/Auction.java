@@ -1,8 +1,6 @@
 package com.ebaby.application;
 
 import java.util.Objects;
-
-import com.ebaby.services.PostOffice;
 import org.joda.time.DateTime;
 
 public class Auction{
@@ -14,6 +12,15 @@ public class Auction{
     private User highestBidder;
     private boolean isActive;
     private Double currentHighBid;
+
+    public Double getSellerAmount() {
+        return sellerAmount;
+    }
+
+    public Double getBuyerAmount() {
+        return buyerAmount;
+    }
+
     private Double sellerAmount;
     private Double buyerAmount;
 
@@ -27,7 +34,7 @@ public class Auction{
 
     private Categories category;
 
-    enum Categories{
+    public enum Categories{
         Car("Car"),
         Downloadable_Software("Downloadable Software");
 
@@ -113,7 +120,7 @@ public class Auction{
             buyerAmount = currentHighBid + (currentHighBid * 4) /100;
         }
 
-        AuctionNotifier auctionNotifier = AuctionNotifier.createInstance(this);
+        AuctionNotifier auctionNotifier = NotificationFactory.createInstance(this);
         auctionNotifier.notifyCloseAuction();
     }
 
@@ -139,10 +146,6 @@ public class Auction{
 
     public Double getCurrentHighBid() {
         return currentHighBid;
-    }
-
-    public void setCurrentHighBid(Double currentHighBid) {
-        this.currentHighBid = currentHighBid;
     }
 
 }

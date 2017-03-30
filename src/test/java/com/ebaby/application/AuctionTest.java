@@ -1,7 +1,9 @@
 package com.ebaby.application;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import com.ebaby.services.PostOffice;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +17,8 @@ public class AuctionTest {
     private DateTime startTime;
     private DateTime endTime;
     private boolean auctionActive;
+    private Auction.Categories categoryCar = Auction.Categories.Car;
+    private PostOffice postOffice;
 
     @Before
     public void setUp() {
@@ -25,7 +29,8 @@ public class AuctionTest {
         userBidder.setAuthenticated(true);
         startTime = DateTime.now().plusDays(5);
         endTime = DateTime.now().plusDays(10);
-        auction = new Auction(userSeller, itemDesc, price, startTime, endTime);
+        auction = new Auction(userSeller, itemDesc, price, startTime, endTime, categoryCar);
+        postOffice = PostOffice.getInstance();
     }
 
     @Test
@@ -39,19 +44,19 @@ public class AuctionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void checkAuctionWithBidder() {
-        new Auction(userBidder, itemDesc, price, startTime, endTime);
+        new Auction(userBidder, itemDesc, price, startTime, endTime,categoryCar);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void checkAuctionWithStartTimeBeforeNow() {
         DateTime invalidStartTime = DateTime.now().minusDays(10);
-        new Auction(userSeller, itemDesc, price, invalidStartTime, endTime);
+        new Auction(userSeller, itemDesc, price, invalidStartTime, endTime,categoryCar);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void checkAuctionWithStartTimeAfterEndTime() {
         DateTime invalidEndTime = DateTime.now().plusDays(2);
-        new Auction(userSeller, itemDesc, price, startTime, invalidEndTime);
+        new Auction(userSeller, itemDesc, price, startTime, invalidEndTime,categoryCar);
     }
 
     @Test
@@ -68,5 +73,21 @@ public class AuctionTest {
         DateTime validTime = DateTime.now().plusDays(7);
         Double invalidPrice = 2.0;
         auction.bid(userBidder, invalidPrice, validTime);
+    }
+
+    @Test
+    public void checkOnCloseWithSale(){
+        DateTime validTime = DateTime.now().plusDays(7);
+        Double validPrice = 4.0;
+        auction.bid(userBidder, validPrice, validTime);
+        auction.onClose();
+        assertTrue(postOffice.doesLogContain(userSeller.getUserEmail(), String.format(" Your \"%s\" auction sold to bidder \"%s\" for \"%s\"", auction.getItemDesc(), auction.getHighestBidder().getUserEmail(), auction.getCurrentHighBid())));
+        assertTrue(postOffice.doesLogContain(userBidder.getUserEmail(), String.format("Congratulations! you won an auction for a \"%s\" from \"%s\" for \"%s\"", auction.getItemDesc(), auction.getUser().getUserEmail(), auction.getCurrentHighBid())));
+    }
+
+    @Test
+    public void checkOnCloseWithNoSale(){
+        auction.onClose();
+        assertTrue(postOffice.doesLogContain(userSeller.getUserEmail(), String.format("Sorry, your auction for \"%s\" did not have any bidders", auction.getItemDesc())));
     }
 }
