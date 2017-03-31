@@ -1,12 +1,14 @@
 package com.ebaby.application;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.ebaby.services.AuctionLogger;
 import com.ebaby.services.PostOffice;
 
 public class AuctionTest {
@@ -17,8 +19,9 @@ public class AuctionTest {
     private Double price = 3.0;
     private DateTime startTime;
     private DateTime endTime;
-    private Auction.Categories categoryCar = Auction.Categories.Car;
+    private Category categoryCar = Category.CAR;
     private PostOffice postOffice;
+    private AuctionLogger auctionLogger;
 
     @Before
     public void setUp() {
@@ -31,6 +34,7 @@ public class AuctionTest {
         endTime = DateTime.now().plusDays(10);
         auction = new Auction(userSeller, itemDesc, price, startTime, endTime, categoryCar);
         postOffice = PostOffice.getInstance();
+        auctionLogger = AuctionLogger.getInstance();
         auction.setActive(true);
     }
 
@@ -108,7 +112,7 @@ public class AuctionTest {
     @Test
     public void checkFeesforDownloadbleSoftware() {
         Double validPrice = 4.0;
-        auction.setCategory(Auction.Categories.Downloadable_Software);
+        auction.setCategory(Category.DOWNLOADABLE_SOFTWARE);
         auction.bid(userBidder, validPrice);
         auction.onClose();
         assertEquals(validPrice, auction.getBuyerAmount());
@@ -117,8 +121,7 @@ public class AuctionTest {
     @Test
     public void checkFeesforCarUnder50K() {
         Double validPrice = 4.0;
-        auction.setCategory(Auction.Categories.Car);
-        auction.setActive(true);
+        auction.setCategory(Category.CAR);
         auction.bid(userBidder, validPrice);
         auction.onClose();
         Double finalPrice = validPrice + 1000;
@@ -128,13 +131,62 @@ public class AuctionTest {
     @Test
     public void checkFeesforCarAbove50K() {
         Double validPrice = 51000.0;
-        auction.setCategory(Auction.Categories.Car);
-        auction.setActive(true);
+        auction.setCategory(Category.CAR);
         auction.bid(userBidder, validPrice);
         auction.onClose();
         Double luxuryTax = (validPrice * 4) / 100;
         Double finalPrice = validPrice + luxuryTax + 1000;
         assertEquals(finalPrice, auction.getBuyerAmount());
+    }
+
+    @Test
+    public void checkTransactionFeeOnSeller() {
+        Double validPrice = 1000.0;
+        auction.bid(userBidder, validPrice);
+        auction.onClose();
+        Double transactionFees = (validPrice * 2) / 100;
+        Double finalPrice = validPrice - transactionFees;
+        assertEquals(finalPrice, auction.getSellerAmount());
+    }
+
+    @Test
+    public void checkShippingFeeOnOtherCategories() {
+        Double validPrice = 1000.0;
+        auction.setCategory(Category.TOY);
+        auction.bid(userBidder, validPrice);
+        auction.onClose();
+        Double finalPrice = validPrice + 10;
+        assertEquals(finalPrice, auction.getBuyerAmount());
+    }
+
+    @Test
+    public void checkLoggerForCar() {
+        Double validPrice = 1000.0;
+        auction.setCategory(Category.CAR);
+        auction.bid(userBidder, validPrice);
+        auction.onClose();
+        String expected = String.format("Item \"%s\" sold to buyer for \"%s\"", auction.getItemDesc(), auction.getBuyerAmount());
+        assertTrue(auctionLogger.findMessage("CarSales.txt", expected));
+    }
+
+    @Test
+    public void checkLoggerForOver10000() {
+        Double validPrice = 11000.0;
+        auction.setCategory(Category.CAR);
+        auction.bid(userBidder, validPrice);
+        auction.onClose();
+        String expected = String.format("Item \"%s\" sold to buyer for \"%s\"", auction.getItemDesc(), auction.getBuyerAmount());
+        assertTrue(auctionLogger.findMessage("SalesOver10K.txt", expected));
+    }
+
+    @Test
+    public void checkLoggerForNeither() {
+        Double validPrice = 9000.0;
+        auction.setCategory(Category.TOY);
+        auction.bid(userBidder, validPrice);
+        auction.onClose();
+        String expected = String.format("Item \"%s\" sold to buyer for \"%s\"", auction.getItemDesc(), auction.getBuyerAmount());
+        assertFalse(auctionLogger.findMessage("SalesOver10K.txt", expected));
     }
 
 }

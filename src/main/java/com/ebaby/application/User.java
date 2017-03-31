@@ -13,7 +13,8 @@ public class User {
 
     public enum Role {
         SELLER,
-        BIDDER
+        BIDDER,
+        PREFERRED_SELLER;
     }
 
     public User(String firstName, String lastName, String userEmail, String userName, String password) {
@@ -72,6 +73,10 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public boolean isASeller(){
+        return getRole() == Role.SELLER || getRole() == Role.PREFERRED_SELLER;
     }
 
     @Override

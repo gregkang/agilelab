@@ -1,13 +1,11 @@
 package com.ebaby.application;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.joda.time.DateTime;
 
-import com.ebaby.application.calculate.FeeCalculator;
-import com.ebaby.application.calculate.FeeCalculatorFactory;
-import com.ebaby.application.notification.AuctionNotifier;
-import com.ebaby.application.notification.AuctionNotifierFactory;
+import com.ebaby.services.AuctionLogger;
 
 public class Auction {
     private final User seller;
@@ -18,46 +16,46 @@ public class Auction {
     private User highestBidder;
     private boolean isActive;
     private Double currentHighBid;
+    private Double sellerAmount;
+    private Double buyerAmount;
+
 
     public Double getSellerAmount() {
         return sellerAmount;
+    }
+
+    public void setSellerAmount(Double sellerAmount) {
+        this.sellerAmount = sellerAmount;
     }
 
     public Double getBuyerAmount() {
         return buyerAmount;
     }
 
-    private Double sellerAmount;
-    private Double buyerAmount;
+    public void setBuyerAmount(Double buyerAmount) {
+        this.buyerAmount = buyerAmount;
+    }
 
-    public Categories getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(Categories category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
-    private Categories category;
-
-    public enum Categories {
-        Car("Car"),
-        Downloadable_Software("Downloadable Software");
-
-        Categories(String type) {
-        }
-    }
+    private Category category;
 
     public Auction(User seller,
             String itemDesc,
             Double price,
             DateTime startTime,
             DateTime endTime,
-            Categories category) {
+            Category category) {
         if (!seller.isAuthenticated()) {
             throw new IllegalArgumentException("Seller must be authenticated before creating auction");
         }
-        if (seller.getRole() != User.Role.SELLER) {
+        if (!seller.isASeller()) {
             throw new IllegalArgumentException("User must be seller");
         }
 
@@ -112,12 +110,12 @@ public class Auction {
 
     public void onClose() {
         setActive(false);
-        FeeCalculator sellerCalculator = FeeCalculatorFactory.createInstance(this, User.Role.SELLER);
-        FeeCalculator buyerCalculator = FeeCalculatorFactory.createInstance(this, User.Role.BIDDER);
-        sellerAmount = sellerCalculator.calculate(getCurrentHighBid());
-        buyerAmount = buyerCalculator.calculate(getCurrentHighBid());
-        AuctionNotifier auctionNotifier = AuctionNotifierFactory.createInstance(this);
-        auctionNotifier.notifyCloseAuction();
+        setBuyerAmount(getCurrentHighBid());
+        setSellerAmount(getCurrentHighBid());
+        List<OnCloseProcessor> processorList = OnCloseProcessorFactory.createProcessors(this);
+        for (OnCloseProcessor processor : processorList) {
+            processor.process(this);
+        }
     }
 
     public User getUser() {

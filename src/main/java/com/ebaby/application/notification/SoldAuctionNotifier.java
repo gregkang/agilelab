@@ -1,16 +1,14 @@
 package com.ebaby.application.notification;
 
 import com.ebaby.application.Auction;
+import com.ebaby.application.OnCloseProcessor;
 import com.ebaby.services.PostOffice;
 
-public class SoldAuctionNotifier extends AuctionNotifier {
+public class SoldAuctionNotifier implements OnCloseProcessor {
     PostOffice postOffice = PostOffice.getInstance();
 
-    public SoldAuctionNotifier(Auction auction) {
-        super(auction);
-    }
-
-    public void notifyCloseAuction() {
+    @Override
+    public void process(Auction auction) {
         postOffice.sendEMail(auction.getUser().getUserEmail(),
                 String.format(" Your \"%s\" auction sold to bidder \"%s\" for \"%s\"",
                         auction.getItemDesc(),
@@ -21,6 +19,5 @@ public class SoldAuctionNotifier extends AuctionNotifier {
                         auction.getItemDesc(),
                         auction.getUser().getUserEmail(),
                         auction.getCurrentHighBid()));
-
     }
 }
