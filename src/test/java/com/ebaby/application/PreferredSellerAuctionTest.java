@@ -6,6 +6,8 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.ebaby.services.OffHours;
+
 public class PreferredSellerAuctionTest {
     private Auction auction;
     private User userSeller;
@@ -25,7 +27,7 @@ public class PreferredSellerAuctionTest {
         userBidder.setAuthenticated(true);
         startTime = DateTime.now().plusDays(5);
         endTime = DateTime.now().plusDays(10);
-        auction = new Auction(userSeller, itemDesc, price, startTime, endTime, categoryCar);
+        auction = new Auction(userSeller, itemDesc, price, startTime, endTime, categoryCar, OffHours.getInstance());
         auction.setActive(true);
     }
 

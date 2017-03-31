@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import org.joda.time.DateTime;
 
-import com.ebaby.services.AuctionLogger;
+import com.ebaby.services.Hours;
 
 public class Auction {
     private final User seller;
@@ -18,6 +18,7 @@ public class Auction {
     private Double currentHighBid;
     private Double sellerAmount;
     private Double buyerAmount;
+    private Hours hours;
 
 
     public Double getSellerAmount() {
@@ -51,7 +52,8 @@ public class Auction {
             Double price,
             DateTime startTime,
             DateTime endTime,
-            Category category) {
+            Category category,
+            Hours hours) {
         if (!seller.isAuthenticated()) {
             throw new IllegalArgumentException("Seller must be authenticated before creating auction");
         }
@@ -73,6 +75,7 @@ public class Auction {
         this.endTime = endTime;
         this.currentHighBid = price;
         this.category = category;
+        this.hours = hours;
     }
 
     public User getHighestBidder() {
@@ -142,4 +145,7 @@ public class Auction {
         return currentHighBid;
     }
 
+    public Hours getHours() {
+        return hours;
+    }
 }

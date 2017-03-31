@@ -17,6 +17,7 @@ public class PreferredFeeCalculatorFactory extends AbstractFeeCalculatorFactory 
         } else if (auction.getCategory() != Category.DOWNLOADABLE_SOFTWARE && auction.getCurrentHighBid() <= 50) {
             processors.add(new ShippingOnCloseProcessor(STANDARD_SHIPPING_FEE));
         }
+        processors.addAll(super.createProcessors(auction));
         return processors;
     }
 }

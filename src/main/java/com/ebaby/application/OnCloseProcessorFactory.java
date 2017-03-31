@@ -6,6 +6,8 @@ import java.util.List;
 import com.ebaby.application.calculation.AbstractFeeCalculatorFactory;
 import com.ebaby.application.calculation.FeeCalculatorFactoryFactory;
 import com.ebaby.application.calculation.LuxuryTaxOnCloseProcessor;
+import com.ebaby.application.log.OffHoursLogger;
+import com.ebaby.application.log.SalesLogger;
 import com.ebaby.application.notification.SoldAuctionNotifier;
 import com.ebaby.application.notification.UnsoldAuctionNotifier;
 
@@ -33,6 +35,7 @@ public class OnCloseProcessorFactory {
         if (auction.getCurrentHighBid() > 10000) {
             processors.add(new SalesLogger("SalesOver10K.txt"));
         }
+        processors.add(new OffHoursLogger("OffHourLogger.txt", auction.getHours()));
         return processors;
     }
 

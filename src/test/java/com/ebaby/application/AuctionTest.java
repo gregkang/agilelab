@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.ebaby.services.AuctionLogger;
+import com.ebaby.services.OffHours;
 import com.ebaby.services.PostOffice;
 
 public class AuctionTest {
@@ -32,7 +33,7 @@ public class AuctionTest {
         userBidder.setAuthenticated(true);
         startTime = DateTime.now().plusDays(5);
         endTime = DateTime.now().plusDays(10);
-        auction = new Auction(userSeller, itemDesc, price, startTime, endTime, categoryCar);
+        auction = new Auction(userSeller, itemDesc, price, startTime, endTime, categoryCar, OffHours.getInstance());
         postOffice = PostOffice.getInstance();
         auctionLogger = AuctionLogger.getInstance();
         auction.setActive(true);
@@ -49,19 +50,19 @@ public class AuctionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void checkAuctionWithBidder() {
-        new Auction(userBidder, itemDesc, price, startTime, endTime, categoryCar);
+        new Auction(userBidder, itemDesc, price, startTime, endTime, categoryCar, OffHours.getInstance());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void checkAuctionWithStartTimeBeforeNow() {
         DateTime invalidStartTime = DateTime.now().minusDays(10);
-        new Auction(userSeller, itemDesc, price, invalidStartTime, endTime, categoryCar);
+        new Auction(userSeller, itemDesc, price, invalidStartTime, endTime, categoryCar, OffHours.getInstance());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void checkAuctionWithStartTimeAfterEndTime() {
         DateTime invalidEndTime = DateTime.now().plusDays(2);
-        new Auction(userSeller, itemDesc, price, startTime, invalidEndTime, categoryCar);
+        new Auction(userSeller, itemDesc, price, startTime, invalidEndTime, categoryCar, OffHours.getInstance());
     }
 
     @Test
@@ -165,28 +166,9 @@ public class AuctionTest {
         auction.setCategory(Category.CAR);
         auction.bid(userBidder, validPrice);
         auction.onClose();
-        String expected = String.format("Item \"%s\" sold to buyer for \"%s\"", auction.getItemDesc(), auction.getBuyerAmount());
+        String expected = String.format("Item \"%s\" sold to buyer for \"%s\"",
+                auction.getItemDesc(),
+                auction.getBuyerAmount());
         assertTrue(auctionLogger.findMessage("CarSales.txt", expected));
     }
-
-    @Test
-    public void checkLoggerForOver10000() {
-        Double validPrice = 11000.0;
-        auction.setCategory(Category.CAR);
-        auction.bid(userBidder, validPrice);
-        auction.onClose();
-        String expected = String.format("Item \"%s\" sold to buyer for \"%s\"", auction.getItemDesc(), auction.getBuyerAmount());
-        assertTrue(auctionLogger.findMessage("SalesOver10K.txt", expected));
-    }
-
-    @Test
-    public void checkLoggerForNeither() {
-        Double validPrice = 9000.0;
-        auction.setCategory(Category.TOY);
-        auction.bid(userBidder, validPrice);
-        auction.onClose();
-        String expected = String.format("Item \"%s\" sold to buyer for \"%s\"", auction.getItemDesc(), auction.getBuyerAmount());
-        assertFalse(auctionLogger.findMessage("SalesOver10K.txt", expected));
-    }
-
 }

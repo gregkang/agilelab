@@ -17,6 +17,7 @@ public class StandardFeeCalculatorFactory extends AbstractFeeCalculatorFactory {
         } else if (auction.getCategory() != Category.DOWNLOADABLE_SOFTWARE) {
             processors.add(new ShippingOnCloseProcessor(STANDARD_SHIPPING_FEE));
         }
+        processors.addAll(super.createProcessors(auction));
         return processors;
     }
 }

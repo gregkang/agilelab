@@ -1,5 +1,7 @@
-package com.ebaby.application;
+package com.ebaby.application.log;
 
+import com.ebaby.application.Auction;
+import com.ebaby.application.OnCloseProcessor;
 import com.ebaby.services.AuctionLogger;
 
 public class SalesLogger implements OnCloseProcessor {
