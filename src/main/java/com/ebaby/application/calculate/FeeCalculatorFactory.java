@@ -3,9 +3,6 @@ package com.ebaby.application.calculate;
 import com.ebaby.application.Auction;
 import com.ebaby.application.User;
 
-/**
- * Created by gkang on 3/30/2017.
- */
 public class FeeCalculatorFactory {
     public static FeeCalculator createInstance(Auction auction, User.Role role) {
         if (role == User.Role.SELLER) {
