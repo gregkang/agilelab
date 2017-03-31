@@ -1,4 +1,6 @@
-package com.ebaby.application;
+package com.ebaby.application.notification;
+
+import com.ebaby.application.Auction;
 
 public abstract class AuctionNotifier {
     Auction auction;

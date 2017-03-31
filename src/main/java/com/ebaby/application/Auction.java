@@ -4,6 +4,11 @@ import java.util.Objects;
 
 import org.joda.time.DateTime;
 
+import com.ebaby.application.calculate.FeeCalculator;
+import com.ebaby.application.calculate.FeeCalculatorFactory;
+import com.ebaby.application.notification.AuctionNotifier;
+import com.ebaby.application.notification.AuctionNotifierFactory;
+
 public class Auction {
     private final User seller;
     private final String itemDesc;
@@ -76,11 +81,11 @@ public class Auction {
         return highestBidder;
     }
 
-    public void bid(User bidder, Double bidPrice, DateTime bidTime) {
+    public void bid(User bidder, Double bidPrice) {
         if (!bidder.isAuthenticated()) {
             throw new IllegalArgumentException("Bidder must be authenticated before creating auction");
         }
-        if (!isActive(bidTime)) {
+        if (!isActive()) {
             throw new IllegalArgumentException("Auction is not active");
         }
         if (Objects.equals(bidder, seller)) {
@@ -93,18 +98,12 @@ public class Auction {
         highestBidder = bidder;
     }
 
-    public boolean isActive(DateTime bidTime) {
-        if (bidTime.isBefore(endTime) || bidTime.isAfter(startTime)) {
-            isActive = true;
-        }
+    public boolean isActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
-        DateTime now = DateTime.now();
-        if (now.isBefore(endTime) || now.isAfter(startTime)) {
-            isActive = false;
-        }
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public void onStart() {
@@ -113,10 +112,10 @@ public class Auction {
 
     public void onClose() {
         setActive(false);
-        FeeCalculator sellerCalculator = FeeProcessingFactory.createInstance(this, User.Role.SELLER);
-        FeeCalculator buyerCalculator = FeeProcessingFactory.createInstance(this, User.Role.BIDDER);
-        sellerAmount = sellerCalculator.calculate(this);
-        buyerAmount = buyerCalculator.calculate(this);
+        FeeCalculator sellerCalculator = FeeCalculatorFactory.createInstance(this, User.Role.SELLER);
+        FeeCalculator buyerCalculator = FeeCalculatorFactory.createInstance(this, User.Role.BIDDER);
+        sellerAmount = sellerCalculator.calculate(getCurrentHighBid());
+        buyerAmount = buyerCalculator.calculate(getCurrentHighBid());
         AuctionNotifier auctionNotifier = AuctionNotifierFactory.createInstance(this);
         auctionNotifier.notifyCloseAuction();
     }

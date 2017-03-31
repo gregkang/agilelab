@@ -1,4 +1,4 @@
-package com.ebaby.application;
+package com.ebaby.application.calculate;
 
 public class FeeCalculatorDecorator implements FeeCalculator {
     private FeeCalculator nextCalculator;
@@ -8,10 +8,10 @@ public class FeeCalculatorDecorator implements FeeCalculator {
     }
 
     @Override
-    public Double calculate(Auction auction) {
-        if(nextCalculator == null){
-            return 0.0;
+    public Double calculate(Double highestBid) {
+        if (nextCalculator == null) {
+            return highestBid;
         }
-        return nextCalculator.calculate(auction);
+        return nextCalculator.calculate(highestBid);
     }
 }

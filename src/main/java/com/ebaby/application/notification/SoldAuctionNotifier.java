@@ -1,5 +1,6 @@
-package com.ebaby.application;
+package com.ebaby.application.notification;
 
+import com.ebaby.application.Auction;
 import com.ebaby.services.PostOffice;
 
 public class SoldAuctionNotifier extends AuctionNotifier {

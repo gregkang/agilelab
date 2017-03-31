@@ -1,8 +1,12 @@
-package com.ebaby.application;
+package com.ebaby.application.calculate;
 
 public class LuxuryTaxFeeCalculator extends FeeCalculatorDecorator {
     private Double taxThreshold;
     private Double taxPercentage;
+
+    public LuxuryTaxFeeCalculator(Double taxThreshold, Double taxAmount) {
+        this(null, taxThreshold, taxAmount);
+    }
 
     public LuxuryTaxFeeCalculator(FeeCalculator nextCalculator, Double taxThreshold, Double taxAmount) {
         super(nextCalculator);
@@ -11,27 +15,19 @@ public class LuxuryTaxFeeCalculator extends FeeCalculatorDecorator {
     }
 
     @Override
-    public Double calculate(Auction auction) {
+    public Double calculate(Double highestBid) {
         Double result = 0.0;
-        if(auction.getCurrentHighBid() > taxThreshold){
-            result = auction.getCurrentHighBid() * (taxPercentage / 100);
+        if (highestBid > taxThreshold) {
+            result = highestBid * (taxPercentage / 100);
         }
-        return result + super.calculate(auction);
+        return result + super.calculate(highestBid);
     }
 
     public Double getTaxThreshold() {
         return taxThreshold;
     }
 
-    public void setTaxThreshold(Double taxThreshold) {
-        this.taxThreshold = taxThreshold;
-    }
-
     public Double getTaxAmount() {
         return taxPercentage;
-    }
-
-    public void setTaxAmount(Double taxAmount) {
-        this.taxPercentage = taxAmount;
     }
 }
